@@ -1,0 +1,67 @@
+version: '3.5'
+
+services:
+  postgres:
+    container_name: postgres_container
+    image: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-new_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      PGDATA: /data/postgres
+    volumes:
+       - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - backend
+    restart: unless-stopped
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_WTF_CSRF_CHECK_DEFAULT: 'False'
+      PGADMIN_CONFIG_WTF_CSRF_ENABLED: 'False'
+    volumes:
+       - pgadmin:/var/lib/pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    networks:
+      - backend
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    
+  app-frontend:
+    container_name: app_frontend
+    build:
+      context: ./frontend
+    stdin_open: true
+    tty: true
+    networks:
+      - redirection
+
+  app-backend:
+    container_name: app_backend
+    build:
+      context: ./backend
+    stdin_open: true
+    tty: true
+    networks:
+      - redirection
+      - backend
+    depends_on:
+      - app-frontend
+      - postgres
+
+networks:
+  redirection :
+  backend:
+ 
+volumes:
+    postgres:
+    pgadmin:
