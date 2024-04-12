@@ -49,8 +49,6 @@ services:
     container_name: app_backend
     build:
       context: ./backend
-    stdin_open: true
-    tty: true
     networks:
       - redirection
       - backend

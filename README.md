@@ -9,3 +9,5 @@ sudo docker logs -f app_backend
 
 # To enter the frontend to give input
 sudo docker exec -it app_frontend /bin/bash
+
+python3 app.py
