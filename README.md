@@ -1,3 +1,6 @@
+# Setup
+python3 -m venv venv
+
 # To run the entire app
 sudo docker-compose up --build
 
